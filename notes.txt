@@ -1,0 +1,22 @@
+  async getWorksheetData() {
+    try {
+      // Call the existing JavaScript function
+      const result = await returnSheetJSON();
+    
+      // Check if the result is an array
+      if (Array.isArray(result)) {
+        // Extract column names
+        this.columnNames = Object.keys(result[0] || {});
+    
+        // Update the MatTableDataSource
+        this.dataSource.data = result;
+    
+        console.log('Data assigned to dataSource:', result);
+        console.log('Column names:', this.columnNames);
+      } else {
+        console.error('Error: The result is not an array.', result);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
