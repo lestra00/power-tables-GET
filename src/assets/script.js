@@ -17,8 +17,11 @@ async function returnSheetJSON() {
     dataTablePage.data.forEach((rowData) => {
       const pair = {};
 
-      rowData.forEach((dataValue) => {
+      rowData.forEach((dataValue, index) => {
         const columnName = dataValue.columnName;
+
+        console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
+
         pair[columnName] = dataValue.formattedValue;
 
         // Try to convert numeric values to numbers
