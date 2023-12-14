@@ -17,16 +17,23 @@ async function returnSheetJSON() {
 
     dataTablePage.data.forEach((rowData) => {
       const obj = {};
+
       rowData.forEach((dataValue, index) => {
         const columnName = columnsExport[index];
-        obj[columnName] = dataValue._formattedValue;
+
+        // Adjust the logic to match the correct column name with its value
+        const columnNameFromDataValue = dataValue.columnName;
+        const actualColumnName = columnsExport.find(name => name === columnNameFromDataValue);
+
+        obj[actualColumnName] = dataValue.formattedValue;
 
         // Try to convert numeric values to numbers
-        const numericValue = parseFloat(dataValue._formattedValue.replace(',', ''));
+        const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
         if (!isNaN(numericValue)) {
-          obj[columnName] = numericValue;
+          obj[actualColumnName] = numericValue;
         }
       });
+
       data.push(obj);
     });
   }

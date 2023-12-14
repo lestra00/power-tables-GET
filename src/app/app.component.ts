@@ -54,6 +54,7 @@ export class AppComponent {
   async ngOnInit() {
    //await this.getData();
   //console.log(this.dataSource.data);
+  console.log("second try");
    await this.getWorksheetData();
    console.log(this.dataSource.data);
    this.displayedColumns = this.columnNames;
