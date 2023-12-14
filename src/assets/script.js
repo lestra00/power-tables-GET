@@ -18,17 +18,19 @@ async function returnSheetJSON() {
       const pair = {};
 
       rowData.forEach((dataValue) => {
-        const columnName = columns[dataValue.columnIndex]?.fieldName;
+        const columnIndex = dataValue.columnIndex;
+        const columnInfo = columns.find(column => column.index === columnIndex);
 
-        if (columnName) {
-          console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
-          pair[columnName] = dataValue.formattedValue;
+        if (columnInfo) {
+          const columnName = columnInfo.fieldName;
 
-          // Try to convert numeric values to numbers
-          const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
-          if (!isNaN(numericValue)) {
-            pair[columnName] = numericValue;
+          if (columnName !== undefined) {
+            pair[columnName] = dataValue.formattedValue;
+          } else {
+            console.log('Column name is undefined for dataValue:', dataValue);
           }
+        } else {
+          console.log('Column info is undefined for columnIndex:', columnIndex);
         }
       });
 
