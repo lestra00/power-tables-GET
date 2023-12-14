@@ -9,36 +9,30 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
+  const columnsExport = columns.map(column => column.fieldName);
   const formattedPairs = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
     const dataTablePage = await dataTableReader.getPageAsync(currentPage);
 
-    dataTablePage.data.forEach((rowData) => {
-      const pair = {};
-
-      rowData.forEach((dataValue) => {
-        const columnIndex = dataValue.columnIndex;
-        const columnInfo = columns.find(column => column.index === columnIndex);
-
-        if (columnInfo) {
-          const columnName = columnInfo.fieldName;
-
-          if (columnName !== undefined) {
-            pair[columnName] = dataValue.formattedValue;
-          } else {
-            console.log('Column name is undefined for dataValue:', dataValue);
-          }
-        } else {
-          console.log('Column info is undefined for columnIndex:', columnIndex);
-        }
-      });
-
+    dataTablePage.data.forEach((innerArray) => {
+      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
       formattedPairs.push(pair);
     });
   }
 
-  return formattedPairs;
+  const data = formattedPairs.map((pair) => {
+    const obj = {};
+    columnsExport.forEach((columnName, index) => {
+      obj[columnName] = pair[index];
+      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
+        obj[columnName] = parseFloat(pair[index].replace(',', ''));
+      }
+    });
+    return obj;
+  });
+
+  return data;
 }
 
 async function main() {
