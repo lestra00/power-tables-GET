@@ -14,32 +14,25 @@ async function returnSheetJSON() {
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
     const dataTablePage = await dataTableReader.getPageAsync(currentPage);
 
-    dataTablePage.data.forEach((innerArray) => {
-      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
+    dataTablePage.data.forEach((rowData) => {
+      const pair = {};
+
+      rowData.forEach((dataValue) => {
+        const columnName = dataValue.columnName;
+        pair[columnName] = dataValue.formattedValue;
+
+        // Try to convert numeric values to numbers
+        const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
+        if (!isNaN(numericValue)) {
+          pair[columnName] = numericValue;
+        }
+      });
+
       formattedPairs.push(pair);
     });
   }
 
-  const data = formattedPairs.map((pair) => {
-    const obj = {};
-
-    pair.forEach((dataValue, index) => {
-      // Dynamically obtain the column name from dataValue
-      const columnName = columns[index].fieldName;
-
-      obj[columnName] = dataValue;
-
-      // Try to convert numeric values to numbers
-      const numericValue = parseFloat(dataValue.replace(',', ''));
-      if (!isNaN(numericValue)) {
-        obj[columnName] = numericValue;
-      }
-    });
-
-    return obj;
-  });
-
-  return data;
+  return formattedPairs;
 }
 
 async function main() {
