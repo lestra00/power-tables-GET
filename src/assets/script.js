@@ -9,7 +9,6 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
-  const columnsExport = columns.map(column => column.fieldName);
   const formattedPairs = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
@@ -18,8 +17,8 @@ async function returnSheetJSON() {
     dataTablePage.data.forEach((rowData) => {
       const pair = {};
 
-      rowData.forEach((dataValue, index) => {
-        const columnName = columnsExport[index];
+      rowData.forEach((dataValue) => {
+        const columnName = columns.find(column => column.index === dataValue.columnIndex).fieldName;
 
         console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
 
