@@ -9,7 +9,6 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await dataTableReader.getColumnsAsync();
 
-  const columnsExport = columns.map(column => column.getFieldName());
   const data = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
@@ -18,8 +17,9 @@ async function returnSheetJSON() {
     dataTablePage.data.forEach((rowData) => {
       const obj = {};
 
-      rowData.forEach((dataValue, index) => {
-        const columnName = columnsExport[index];
+      rowData.forEach((dataValue) => {
+        // Get the column name dynamically for each data value
+        const columnName = dataValue.columnName;
 
         obj[columnName] = dataValue.formattedValue;
 
