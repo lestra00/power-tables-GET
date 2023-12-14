@@ -9,7 +9,6 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
-  const columnsExport = columns.map(column => column.fieldName);
   const formattedPairs = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
@@ -23,12 +22,20 @@ async function returnSheetJSON() {
 
   const data = formattedPairs.map((pair) => {
     const obj = {};
-    columnsExport.forEach((columnName, index) => {
-      obj[columnName] = pair[index];
-      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
-        obj[columnName] = parseFloat(pair[index].replace(',', ''));
+
+    pair.forEach((dataValue, index) => {
+      // Dynamically obtain the column name from dataValue
+      const columnName = columns[index].fieldName;
+
+      obj[columnName] = dataValue;
+
+      // Try to convert numeric values to numbers
+      const numericValue = parseFloat(dataValue.replace(',', ''));
+      if (!isNaN(numericValue)) {
+        obj[columnName] = numericValue;
       }
     });
+
     return obj;
   });
 
