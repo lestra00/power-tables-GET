@@ -18,16 +18,21 @@ async function returnSheetJSON() {
       const pair = {};
 
       rowData.forEach((dataValue) => {
-        const columnName = columns.find(column => column.index === dataValue.columnIndex).fieldName;
+        const columnIndex = dataValue.columnIndex;
+        const columnInfo = columns.find(column => column.index === columnIndex);
 
-        console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
+        if (columnInfo) {
+          const columnName = columnInfo.fieldName;
 
-        pair[columnName] = dataValue.formattedValue;
+          console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
 
-        // Try to convert numeric values to numbers
-        const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
-        if (!isNaN(numericValue)) {
-          pair[columnName] = numericValue;
+          pair[columnName] = dataValue.formattedValue;
+
+          // Try to convert numeric values to numbers
+          const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
+          if (!isNaN(numericValue)) {
+            pair[columnName] = numericValue;
+          }
         }
       });
 
