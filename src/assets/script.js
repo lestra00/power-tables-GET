@@ -9,9 +9,15 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
+  // Use the getColumnName method to retrieve the field name
+  const getColumnFieldName = (columnIndex) => {
+    return worksheet.getColumnNameAsync(columnIndex);
+  };
+
   console.log('Columns:');
-  columns.forEach((column, index) => {
+  columns.forEach(async (column, index) => {
     console.log(`Column ${index}:`, column);
+    console.log('Column Name:', await getColumnFieldName(column.index));
   });
 
   const formattedPairs = [];
@@ -22,20 +28,14 @@ async function returnSheetJSON() {
     dataTablePage.data.forEach((rowData) => {
       const pair = {};
 
-      rowData.forEach((dataValue) => {
+      rowData.forEach(async (dataValue) => {
         const columnIndex = dataValue.columnIndex;
-        const columnInfo = columns.find(column => column.index === columnIndex);
+        const columnName = await getColumnFieldName(columnIndex);
 
-        if (columnInfo) {
-          const columnName = columnInfo._fieldName; // Use _fieldName property
-
-          if (columnName !== undefined) {
-            pair[columnName] = dataValue.formattedValue;
-          } else {
-            console.log('Column name is undefined for dataValue:', dataValue);
-          }
+        if (columnName !== undefined) {
+          pair[columnName] = dataValue.formattedValue;
         } else {
-          console.log('Column info is undefined for columnIndex:', columnIndex);
+          console.log('Column name is undefined for dataValue:', dataValue);
         }
       });
 
