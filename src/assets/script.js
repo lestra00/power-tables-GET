@@ -18,14 +18,10 @@ async function returnSheetJSON() {
       const pair = {};
 
       rowData.forEach((dataValue) => {
-        const columnIndex = dataValue.columnIndex;
-        const columnInfo = columns.find(column => column.index === columnIndex);
+        const columnName = columns[dataValue.columnIndex]?.fieldName;
 
-        if (columnInfo) {
-          const columnName = columnInfo.fieldName;
-
+        if (columnName) {
           console.log(`Column: ${columnName}, Value: ${dataValue.formattedValue}`);
-
           pair[columnName] = dataValue.formattedValue;
 
           // Try to convert numeric values to numbers
