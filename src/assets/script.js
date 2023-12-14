@@ -7,32 +7,30 @@ async function returnSheetJSON() {
   const worksheet = worksheets.find(ws => ws.name === "Sheet 1");
 
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
-  const columns = await dataTableReader.getColumnsAsync();
+  const columns = await worksheet.getSummaryColumnsInfoAsync();
 
-  const data = [];
+  const columnsExport = columns.map(column => column.fieldName);
+  const formattedPairs = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
     const dataTablePage = await dataTableReader.getPageAsync(currentPage);
 
-    dataTablePage.data.forEach((rowData) => {
-      const obj = {};
-
-      rowData.forEach((dataValue) => {
-        // Get the column name dynamically for each data value
-        const columnName = dataValue.columnName;
-
-        obj[columnName] = dataValue.formattedValue;
-
-        // Try to convert numeric values to numbers
-        const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
-        if (!isNaN(numericValue)) {
-          obj[columnName] = numericValue;
-        }
-      });
-
-      data.push(obj);
+    dataTablePage.data.forEach((innerArray) => {
+      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
+      formattedPairs.push(pair);
     });
   }
+
+  const data = formattedPairs.map((pair) => {
+    const obj = {};
+    columnsExport.forEach((columnName, index) => {
+      obj[columnName] = pair[index];
+      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
+        obj[columnName] = parseFloat(pair[index].replace(',', ''));
+      }
+    });
+    return obj;
+  });
 
   return data;
 }
@@ -47,6 +45,3 @@ async function main() {
 }
 
 window.returnSheetJSON = returnSheetJSON;
-
-// Uncomment the line below if you want to run the main function immediately
-// main();
