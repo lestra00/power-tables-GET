@@ -7,9 +7,9 @@ async function returnSheetJSON() {
   const worksheet = worksheets.find(ws => ws.name === "Sheet 1");
 
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
-  const columns = await worksheet.getSummaryColumnsInfoAsync();
+  const columns = await dataTableReader.getColumnsAsync();
 
-  const columnsExport = columns.map(column => column.fieldName);
+  const columnsExport = columns.map(column => column.getFieldName());
   const data = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
@@ -21,16 +21,12 @@ async function returnSheetJSON() {
       rowData.forEach((dataValue, index) => {
         const columnName = columnsExport[index];
 
-        // Adjust the logic to match the correct column name with its value
-        const columnNameFromDataValue = dataValue.columnName;
-        const actualColumnName = columnsExport.find(name => name === columnNameFromDataValue);
-
-        obj[actualColumnName] = dataValue.formattedValue;
+        obj[columnName] = dataValue.formattedValue;
 
         // Try to convert numeric values to numbers
         const numericValue = parseFloat(dataValue.formattedValue.replace(',', ''));
         if (!isNaN(numericValue)) {
-          obj[actualColumnName] = numericValue;
+          obj[columnName] = numericValue;
         }
       });
 
