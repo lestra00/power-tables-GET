@@ -9,7 +9,10 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
-  console.log('Columns:', columns);
+  console.log('Columns:');
+  columns.forEach((column, index) => {
+    console.log(`Column ${index}:`, column);
+  });
 
   const formattedPairs = [];
 
