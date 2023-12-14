@@ -27,7 +27,7 @@ async function returnSheetJSON() {
         const columnInfo = columns.find(column => column.index === columnIndex);
 
         if (columnInfo) {
-          const columnName = columnInfo.fieldName;
+          const columnName = columnInfo._fieldName; // Use _fieldName property
 
           if (columnName !== undefined) {
             pair[columnName] = dataValue.formattedValue;
