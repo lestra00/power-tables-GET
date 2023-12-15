@@ -9,41 +9,30 @@ async function returnSheetJSON() {
   const dataTableReader = await worksheet.getSummaryDataReaderAsync();
   const columns = await worksheet.getSummaryColumnsInfoAsync();
 
-  // Use the getColumnName method to retrieve the field name
-  const getColumnFieldName = (columnIndex) => {
-    return worksheet.getColumnNameAsync(columnIndex);
-  };
-
-  console.log('Columns:');
-  columns.forEach(async (column, index) => {
-    console.log(`Column ${index}:`, column);
-    console.log('Column Name:', await getColumnFieldName(column.index));
-  });
-
+  const columnsExport = columns.map(column => column.fieldName);
   const formattedPairs = [];
 
   for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
     const dataTablePage = await dataTableReader.getPageAsync(currentPage);
 
-    dataTablePage.data.forEach((rowData) => {
-      const pair = {};
-
-      rowData.forEach(async (dataValue) => {
-        const columnIndex = dataValue.columnIndex;
-        const columnName = await getColumnFieldName(columnIndex);
-
-        if (columnName !== undefined) {
-          pair[columnName] = dataValue.formattedValue;
-        } else {
-          console.log('Column name is undefined for dataValue:', dataValue);
-        }
-      });
-
+    dataTablePage.data.forEach((innerArray) => {
+      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
       formattedPairs.push(pair);
     });
   }
 
-  return formattedPairs;
+  const data = formattedPairs.map((pair) => {
+    const obj = {};
+    columnsExport.forEach((columnName, index) => {
+      obj[columnName] = pair[index];
+      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
+        obj[columnName] = parseFloat(pair[index].replace(',', ''));
+      }
+    });
+    return obj;
+  });
+
+  return data;
 }
 
 async function main() {
