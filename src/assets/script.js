@@ -6,34 +6,34 @@ async function returnSheetJSON() {
   const worksheets = tableau.extensions.dashboardContent.dashboard.worksheets;
   const worksheet = worksheets.find(ws => ws.name === "Sheet 1");
 
-  const dataTableReader = await worksheet.getSummaryDataReaderAsync();
-  const columns = await worksheet.getSummaryColumnsInfoAsync();
+  const rawData = await worksheet.getSummaryDataAsync();
+  
+  const columnNames = rawData.columns.map(column => column.fieldName);
 
-  const columnsExport = columns.map(column => column.fieldName);
-  const formattedPairs = [];
+  const result = [];
 
-  for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
-    const dataTablePage = await dataTableReader.getPageAsync(currentPage);
-
-    dataTablePage.data.forEach((innerArray) => {
-      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
-      formattedPairs.push(pair);
+  rawData.data.map(row => {
+    const rowData = [];
+    row.forEach((value, index) => {
+      const cellColumnName = columnNames[index];
+     //var elm = {columnName: cellColumnName, columnValue: value._formattedValue};
+     var elm = {[cellColumnName]: value._formattedValue};
+     rowData.push(elm);
     });
-  }
 
-  const data = formattedPairs.map((pair) => {
-    const obj = {};
-    columnsExport.forEach((columnName, index) => {
-      obj[columnName] = pair[index];
-      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
-        obj[columnName] = parseFloat(pair[index].replace(',', ''));
-      }
-    });
-    return obj;
+    let mergedObject = rowData.reduce((accumulator, currentObject) => {
+      return { ...accumulator, ...currentObject };
+    }, {});
+    console.log(mergedObject);
+    result.push(mergedObject);
+    
   });
+ 
+  
+  console.log(result);
 
-  return data;
-}
+  return [columnNames, result];
+
 
 async function main() {
   try {
@@ -44,4 +44,5 @@ async function main() {
   }
 }
 
-window.returnSheetJSON = returnSheetJSON;
+}
+window.returnSheetJSON = returnSheetJSON;  

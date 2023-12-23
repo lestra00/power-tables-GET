@@ -52,41 +52,32 @@ export class AppComponent {
   @ViewChild(MatSort) sort: MatSort = <MatSort>{};
   
   async ngOnInit() {
-   //await this.getData();
   //console.log(this.dataSource.data);
   console.log("second try");
    await this.getWorksheetData();
-   console.log(this.dataSource.data);
+   //console.log(this.dataSource.data);
    this.displayedColumns = this.columnNames;
    this.dataSource.paginator = this.paginator;
    this.dataSource.sort = this.sort;
    
   }
 
-
- async getData(){
-     console.log(returnSheetJSON());
- }
-
-
-
-
  async getWorksheetData() {
   try {
     // Call the existing JavaScript function
     const result = await returnSheetJSON();
-  
+    //this.columnNames = result.columnNames;
     // Check if the result is an array
     if (Array.isArray(result)) {
       // Extract column names
-      this.columnNames = Object.keys(result[0] || {});
-  
+         //this.columnNames = Object.keys(result[0] || {});
+      this.columnNames = result[0];
       // Update the MatTableDataSource
-      this.dataSource = new MatTableDataSource(result);
+      this.dataSource = new MatTableDataSource(result[1]);
   
-      console.log('Data assigned to dataSource:', result);
-      console.log('Column names:', this.columnNames);
-      console.log(this.dataSource);
+      //console.log('Data assigned to dataSource:', result);
+     // console.log('Column names:', this.columnNames);
+     // console.log(this.dataSource);
     } else {
       console.error('Error: The result is not an array.', result);
     }

@@ -20,3 +20,36 @@
       console.error('Error:', error);
     }
   }
+
+
+
+  //////////////////////////////////////////////////
+  /*
+  const columns = await worksheet.getSummaryColumnsInfoAsync();
+  //console.log(dataTableReader);
+  const columnsExport = columns.map(column => column.fieldName);
+  const formattedPairs = [];
+
+  for (let currentPage = 0; currentPage < dataTableReader.pageCount; currentPage++) {
+    const dataTablePage = await dataTableReader.getPageAsync(currentPage);
+
+    dataTablePage.data.forEach((innerArray) => {
+      const pair = innerArray.map((dataValue) => dataValue._formattedValue);
+      formattedPairs.push(pair);
+    });
+  }
+
+  const data = formattedPairs.map((pair) => {
+    const obj = {};
+    columnsExport.forEach((columnName, index) => {
+      obj[columnName] = pair[index];
+      if (!isNaN(parseFloat(pair[index].replace(',', '')))) {
+        obj[columnName] = parseFloat(pair[index].replace(',', ''));
+      }
+    });
+    return obj;
+  });
+
+  return data;
+}
+*/
